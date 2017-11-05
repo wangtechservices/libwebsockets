@@ -616,6 +616,8 @@ callback_acme_client(struct lws *wsi, enum lws_callback_reasons reason,
 	case LWS_CALLBACK_ESTABLISHED_CLIENT_HTTP:
 		lwsl_notice("lws_http_client_http_response %d\n",
 			    lws_http_client_http_response(wsi));
+		if (!ac)
+			break;
 		ac->resp = lws_http_client_http_response(wsi);
 		/* we get a new nonce each time */
 		if (lws_hdr_total_length(wsi, WSI_TOKEN_REPLAY_NONCE) &&
@@ -673,7 +675,8 @@ callback_acme_client(struct lws *wsi, enum lws_callback_reasons reason,
 		break;
 
 	case LWS_CALLBACK_CLIENT_APPEND_HANDSHAKE_HEADER:
-
+		if (!ac)
+			break;
 		switch (ac->state) {
 
 		case ACME_STATE_DIRECTORY:
