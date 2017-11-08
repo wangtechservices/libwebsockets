@@ -487,8 +487,12 @@ int SSL_write(SSL *ssl, const void *buffer, int len)
     if (ret >= 0) {
         ret = len - send_bytes;
         ssl->rwstate = SSL_NOTHING;
-    } else
-        ret = -1;
+    } else {
+	if (SSL_want_read(ssl) || SSL_want_write(ssl))
+		ret = len - send_bytes;
+	else
+		ret = -1;
+    }
 
     return ret;
 }
